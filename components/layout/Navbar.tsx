@@ -4,7 +4,7 @@ import { Clock, CheckSquare, Home } from 'lucide-react';
 
 export function Navbar({ activeId, setActiveId }: { activeId: string, setActiveId: (id: string) => void }) {
     const navItems = [
-        { id: 'hero', label: 'HOME', icon: Home },
+        { id: 'start', label: 'HOME', icon: Home },
         { id: 'pomodoro', label: 'FOCUS', icon: Clock },
         { id: 'todo', label: 'TASK', icon: CheckSquare }
     ];

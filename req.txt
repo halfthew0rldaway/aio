@@ -1,0 +1,433 @@
+📄 PROJECT REQUIREMENTS — AIO Dashboard (Neobrutalism, Clean, No AI Slop)
+0. ROLE & BEHAVIOR RULES (STRICT)
+
+You are a senior frontend engineer.
+
+You MUST:
+
+Produce clean, production-ready code.
+
+Follow best practices.
+
+Keep code readable and modular.
+
+Avoid unnecessary comments.
+
+Avoid overengineering.
+
+Avoid unnecessary abstraction.
+
+Avoid self-explanations.
+
+Do NOT simulate testing.
+
+Do NOT preview imaginary outputs.
+
+Do NOT explain what you are about to do.
+
+Do NOT summarize excessively.
+
+Only provide minimal and important summary at the very end.
+
+Do not waste tokens with motivational text or filler.
+
+You MUST NOT:
+
+Add glassmorphism.
+
+Add neon AI-style glow effects.
+
+Add gradients unless subtle and justified.
+
+Add "AI dashboard vibes".
+
+Add unnecessary animations.
+
+Add unnecessary libraries.
+
+Add heavy UI frameworks unless absolutely required.
+
+Be intentional and strict.
+
+1. PROJECT OVERVIEW
+
+Build a personal AIO (All-In-One) Dashboard Web App that:
+
+Displays all deployed projects (cards/grid)
+
+Displays GitHub profile
+
+Displays social media links
+
+Includes:
+
+Pomodoro / Focus timer
+
+To-do list
+
+Has smooth motion design
+
+Uses Neobrutalism design system
+
+Feels premium and intentional
+
+Fully responsive
+
+Clean architecture
+
+This is a serious portfolio tool, not a gimmick.
+
+2. TECH STACK
+
+Preferred:
+
+Next.js (App Router)
+
+TypeScript
+
+TailwindCSS
+
+Framer Motion (for motion design)
+
+No UI libraries (no shadcn, no MUI, no bootstrap)
+
+No component kits
+
+If not Next.js, then:
+
+Vite + React + TypeScript + Tailwind
+
+No backend required (unless absolutely needed).
+
+3. DESIGN SYSTEM — STRICT
+Style: Neobrutalism
+
+Characteristics:
+
+Strong borders (2–4px solid black)
+
+Hard shadows (offset, no blur)
+
+Sharp edges or controlled radius (max rounded-xl)
+
+Bold typography
+
+High contrast
+
+Solid color blocks
+
+No transparency blur
+
+No glassmorphism
+
+No glow
+
+No gradient spam
+
+Fonts
+
+Use proper fonts that fit neobrutalism:
+
+Headings: Space Grotesk / Satoshi / General Sans
+
+Body: Inter
+
+Fallback system fonts
+
+Implement correct font hierarchy:
+
+Clear scale
+
+Consistent spacing
+
+4. CORE FEATURES
+4.1 Projects Section
+
+Display project cards:
+
+Each card:
+
+Project name
+
+Short description
+
+Tech stack tags
+
+Live link
+
+GitHub link (if exists)
+
+Layout:
+
+Responsive grid
+
+3 columns desktop
+
+2 tablet
+
+1 mobile
+
+Card behavior:
+
+Subtle lift on hover
+
+Slight scale (1.02–1.04 max)
+
+Shadow shift on hover
+
+Smooth 150–250ms transition
+
+No dramatic animation.
+
+Projects should be driven by a data array (clean architecture).
+
+4.2 GitHub Section
+
+GitHub:
+https://github.com/halfthew0rldaway
+
+Show:
+
+Username
+
+Bio (if fetched)
+
+Follower count
+
+Repo count
+
+Link to profile
+
+Use GitHub API (simple fetch).
+Do NOT overcomplicate.
+Handle loading state cleanly.
+Handle error state gracefully.
+
+4.3 Social Media Section
+
+Display clickable cards/icons for:
+
+GitHub
+
+LinkedIn
+
+Instagram
+
+Twitter/X (optional)
+
+Styled consistent with design system.
+
+4.4 Pomodoro / Focus Timer
+
+Features:
+
+25 min focus
+
+5 min break
+
+Start
+
+Pause
+
+Reset
+
+Session switch (Focus / Break)
+
+Sound optional but simple
+
+Implementation:
+
+Pure React state
+
+No external timer libraries
+
+Proper cleanup of intervals
+
+Prevent multiple intervals bug
+
+UI:
+
+Large time display
+
+Clean typography
+
+Minimal but strong
+
+Animation:
+
+Subtle progress ring OR progress bar
+
+Smooth transitions only
+
+4.5 To-Do List
+
+Features:
+
+Add task
+
+Delete task
+
+Mark complete
+
+Persist to localStorage
+
+Clean state management
+
+No drag and drop unless extremely clean.
+
+UI:
+
+Checkbox style
+
+Clean list
+
+Completed tasks visually distinct (line-through)
+
+5. MOTION DESIGN
+
+Use Framer Motion intentionally.
+
+Allowed:
+
+Page fade in
+
+Card hover animation
+
+Subtle layout animation
+
+Micro-interactions
+
+Not allowed:
+
+Dramatic spring bounce
+
+Over-rotation
+
+Over-scaling
+
+Excess blur transitions
+
+Keep it professional.
+
+6. ARCHITECTURE
+
+Use clean folder structure:
+
+/components
+/features
+/lib
+/types
+/data
+
+Separate:
+
+UI components
+
+Logic hooks
+
+Data config
+
+Use:
+
+Custom hooks for Pomodoro
+
+Custom hooks for localStorage
+
+No messy single-file implementation.
+
+7. RESPONSIVENESS
+
+Breakpoints:
+
+Mobile-first
+
+Tablet
+
+Desktop
+
+No broken layout.
+No overflow.
+No horizontal scroll bug.
+
+8. PERFORMANCE
+
+Avoid unnecessary re-renders
+
+Use memo where reasonable
+
+Avoid inline heavy functions
+
+Keep bundle small
+
+9. ACCESSIBILITY
+
+Semantic HTML
+
+Button roles correct
+
+Keyboard accessible
+
+aria-label where necessary
+
+10. OUTPUT FORMAT
+
+The AI agent must:
+
+Provide full folder structure
+
+Provide complete code
+
+No extra explanation
+
+Minimal summary at end:
+
+Stack used
+
+How to run
+
+Key architecture decisions
+
+No storytelling.
+No commentary.
+No filler.
+
+11. CODE QUALITY RULES
+
+TypeScript strict mode
+
+No any types
+
+Proper interfaces
+
+Clean naming
+
+No console.log leftovers
+
+No commented dead code
+
+No unused imports
+
+Proper error handling
+
+Clean separation of concerns
+
+If something is simple, keep it simple.
+If something is complex, structure it properly.
+
+Do not overbuild.
+
+12. PROJECT GOAL
+
+The final result must feel:
+
+Intentional
+
+Confident
+
+Minimal but strong
+
+Designed by someone who understands systems
+
+Not like AI generated slop
+
+It should look like a serious developer built it.

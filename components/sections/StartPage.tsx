@@ -86,17 +86,6 @@ export function StartPage({ setActiveSection }: { setActiveSection: (id: string)
             <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-neo-blue rounded-full blur-3xl opacity-30 -z-10 animate-drift" style={{ animationDelay: '4s' }} />
             <div className="absolute top-1/2 right-1/4 w-72 h-72 bg-neo-orange rounded-full blur-3xl opacity-20 -z-10 animate-drift" style={{ animationDelay: '1s' }} />
 
-            {/* Bottom Running Text Marquee */}
-            <div className="absolute bottom-0 left-0 w-full h-8 bg-black border-t-[3px] border-black flex items-center overflow-hidden z-20">
-                <div className="flex animate-marquee whitespace-nowrap min-w-[200%]" style={{ animationDirection: 'reverse' }}>
-                    {[...Array(20)].map((_, i) => (
-                        <span key={i} className="text-white font-bold text-xs uppercase tracking-widest px-4 text-neo-orange">
-                            • {greeting}, BLEU • PRODUCTIVITY MODE ENGAGED • {weather?.temp ?? '--'}°C {weather?.condition.toUpperCase() ?? ''} •
-                        </span>
-                    ))}
-                </div>
-            </div>
-
             {/* === Decorative Neobrutalist Elements === */}
             {/* Pill/Sticker */}
             <div className="hidden lg:block absolute top-[15%] left-[8%] rotate-[-12deg] z-0 pointer-events-none animate-pulse">

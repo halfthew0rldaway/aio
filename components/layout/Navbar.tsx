@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, CheckSquare, Home } from 'lucide-react';
+import { Clock, CheckSquare, Home, Moon } from 'lucide-react';
 
 export function Navbar({ activeId, setActiveId }: { activeId: string, setActiveId: (id: string) => void }) {
     const navItems = [
@@ -33,9 +33,9 @@ export function Navbar({ activeId, setActiveId }: { activeId: string, setActiveI
                 </div>
             </nav>
 
-            {/* Tilted 'N' logo equivalent - Moved out of the transformed nav container so fixed positioning works correctly relative to viewport */}
-            <div className="fixed top-8 left-8 z-50 w-12 h-12 bg-[#f4f4f5] border-[3px] border-[#18181b] rounded-xl shadow-[4px_4px_0px_#18181b] flex items-center justify-center font-heading font-black text-2xl">
-                AIO
+            {/* Top Left Decorative Moon Logo */}
+            <div className="fixed top-8 left-8 z-50 w-12 h-12 bg-neo-purple border-[3px] border-black rounded-xl shadow-[4px_4px_0px_#18181b] flex items-center justify-center font-heading font-black text-2xl transition-transform hover:-translate-y-1 hover:shadow-[6px_6px_0px_#18181b]">
+                <Moon size={24} strokeWidth={3} className="text-black" />
             </div>
         </>
     );

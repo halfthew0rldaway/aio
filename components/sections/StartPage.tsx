@@ -64,17 +64,78 @@ export function StartPage({ setActiveSection }: { setActiveSection: (id: string)
     return (
         <section className="min-h-[100dvh] w-full flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden bg-neo-bg z-0">
 
-            {/* Background Details - Dot Grid */}
+            {/* Background Details - Paper Grid */}
             <div
-                className="absolute inset-0 opacity-25 -z-10"
+                className="absolute inset-0 z-0"
                 style={{
-                    backgroundImage: 'radial-gradient(#111 2.5px, transparent 2.5px)',
-                    backgroundSize: '32px 32px'
+                    backgroundColor: '#F5F5DC', // Light beige paper color
+                    backgroundImage: `
+                        linear-gradient(rgba(17, 17, 17, 0.1) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(17, 17, 17, 0.1) 1px, transparent 1px)
+                    `,
+                    backgroundSize: '24px 24px',
+                    opacity: 0.8
                 }}
             />
+            {/* Overlay texture for paper roughness (using a CSS noise trick or just a subtle transparent overlay) */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply z-0" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} />
+
+            {/* Floating Background Blooms */}
+            <div className="absolute top-1/4 -left-32 w-96 h-96 bg-neo-pink rounded-full blur-3xl opacity-30 -z-10 animate-drift" />
+            <div className="absolute top-3/4 left-1/4 w-[500px] h-[500px] bg-neo-purple rounded-full blur-3xl opacity-20 -z-10 animate-drift" style={{ animationDelay: '2s' }} />
+            <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-neo-blue rounded-full blur-3xl opacity-30 -z-10 animate-drift" style={{ animationDelay: '4s' }} />
+            <div className="absolute top-1/2 right-1/4 w-72 h-72 bg-neo-orange rounded-full blur-3xl opacity-20 -z-10 animate-drift" style={{ animationDelay: '1s' }} />
+
+            {/* Bottom Running Text Marquee */}
+            <div className="absolute bottom-0 left-0 w-full h-8 bg-black border-t-[3px] border-black flex items-center overflow-hidden z-20">
+                <div className="flex animate-marquee whitespace-nowrap min-w-[200%]" style={{ animationDirection: 'reverse' }}>
+                    {[...Array(20)].map((_, i) => (
+                        <span key={i} className="text-white font-bold text-xs uppercase tracking-widest px-4 text-neo-orange">
+                            • {greeting}, BLEU • PRODUCTIVITY MODE ENGAGED • {weather?.temp ?? '--'}°C {weather?.condition.toUpperCase() ?? ''} •
+                        </span>
+                    ))}
+                </div>
+            </div>
+
+            {/* === Decorative Neobrutalist Elements === */}
+            {/* Pill/Sticker */}
+            <div className="hidden lg:block absolute top-[15%] left-[8%] rotate-[-12deg] z-0 pointer-events-none animate-pulse">
+                <div className="bg-neo-purple border-[3px] border-black px-4 py-1 text-black font-black font-heading tracking-widest text-sm shadow-[4px_4px_0px_#111111] uppercase">
+                    SYS. CORE
+                </div>
+            </div>
+
+            {/* Star Shape */}
+            <div className="hidden xl:block absolute top-[60%] left-[6%] rotate-[15deg] z-0 pointer-events-none opacity-90 hover:rotate-45 transition-transform duration-500">
+                <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-[6px_6px_0px_rgba(17,17,17,1)]">
+                    <path d="M50 0L61.2257 34.5491H97.5528L68.1636 55.9017L79.3893 90.4509L50 69.0983L20.6107 90.4509L31.8364 55.9017L2.44717 34.5491H38.7743L50 0Z" fill="#FF9EAA" stroke="#111111" strokeWidth="4" strokeLinejoin="round" />
+                </svg>
+            </div>
+
+            {/* Abstract Lines */}
+            <div className="hidden lg:flex absolute top-[20%] right-[7%] rotate-[8deg] z-0 pointer-events-none flex-col gap-2 opacity-90">
+                <div className="w-16 h-4 bg-neo-blue border-[3px] border-black shadow-[4px_4px_0px_#111111] animate-bounce" style={{ animationDelay: '0s' }}></div>
+                <div className="w-24 h-4 bg-neo-blue border-[3px] border-black shadow-[4px_4px_0px_#111111] animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-10 h-4 bg-neo-blue border-[3px] border-black shadow-[4px_4px_0px_#111111] animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            </div>
+
+            {/* Circle target */}
+            <div className="hidden xl:block absolute bottom-[20%] right-[8%] rotate-[-25deg] z-0 pointer-events-none opacity-90">
+                <div className="bg-[#F5F5DC] border-[4px] border-black p-3 rounded-full shadow-[6px_6px_0px_#111111] flex items-center justify-center animate-[spin_10s_linear_infinite]">
+                    <svg width="30" height="30" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 0V40M0 20H40" stroke="#111111" strokeWidth="6" />
+                    </svg>
+                </div>
+            </div>
+
+            {/* Plus Signs scattered */}
+            <div className="hidden md:block absolute top-[40%] left-[25%] text-black font-black text-2xl opacity-40 pointer-events-none">+</div>
+            <div className="hidden lg:block absolute bottom-[35%] right-[28%] text-black font-black text-3xl opacity-40 pointer-events-none">+</div>
+            <div className="hidden md:block absolute top-[12%] right-[32%] text-black font-black text-xl opacity-40 pointer-events-none">+</div>
+            <div className="hidden xl:block absolute bottom-[15%] left-[20%] text-black font-black text-xl opacity-40 pointer-events-none">+</div>
 
             {/* Main Content Container - Wide and Clean */}
-            <div className="w-full max-w-7xl flex flex-col items-center gap-10 xl:gap-14 relative z-10 -mt-10">
+            <div className="w-full max-w-7xl flex flex-col items-center gap-10 xl:gap-14 relative z-10 -mt-2">
 
                 {/* Greeting Balloon Chat */}
                 <div className="relative mb-2 self-center animate-bounce duration-3000">
@@ -107,10 +168,10 @@ export function StartPage({ setActiveSection }: { setActiveSection: (id: string)
                 </form>
 
                 {/* Main Dashboard Layout */}
-                <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+                <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
 
                     {/* Left Column: Primary Widgets */}
-                    <div className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-6 md:col-span-1 lg:col-span-1">
                         {/* Time & Weather Row */}
                         <div className="grid grid-cols-2 gap-5">
                             {/* Time Widget */}
@@ -149,7 +210,7 @@ export function StartPage({ setActiveSection }: { setActiveSection: (id: string)
                     </div>
 
                     {/* Center Column: Productivity / Tasks */}
-                    <div className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-6 md:col-span-1 lg:col-span-1">
                         <button
                             onClick={() => setActiveSection('todo')}
                             className="h-full w-full bg-neo-blue border-[3px] border-black p-5 shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-start items-start hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all text-left text-black"
@@ -181,7 +242,7 @@ export function StartPage({ setActiveSection }: { setActiveSection: (id: string)
                     </div>
 
                     {/* Right Column: Mini Apps / Links */}
-                    <div className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-6 md:col-span-2 lg:col-span-1">
                         <div className="grid grid-cols-4 gap-4 h-full">
                             {/* App Icon 1 */}
                             <a href="https://github.com" className="bg-white border-[3px] border-black aspect-square shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all group">

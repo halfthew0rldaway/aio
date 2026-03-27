@@ -59,6 +59,12 @@ export function usePomodoro() {
         } else if (timeLeft === 0 && isActive) {
             setIsActive(false);
             if (intervalRef.current) clearInterval(intervalRef.current);
+            if (mode === 'focus') {
+                try {
+                    const currentCount = parseInt(localStorage.getItem('focus-count') || '0', 10);
+                    localStorage.setItem('focus-count', String(currentCount + 1));
+                } catch (e) { }
+            }
             try {
                 const audio = new Audio('https://www.soundjay.com/buttons/sounds/button-3.mp3');
                 audio.play().catch(() => { });

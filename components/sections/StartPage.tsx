@@ -1,16 +1,34 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Search, Clock, Calendar, CheckSquare, Sun, CloudSun, Github, Youtube, Facebook, MessageCircle, ShoppingBag, Store, Activity, Mail, MessageSquare } from 'lucide-react';
+import { Search, Clock, Calendar, CheckSquare, Sun, CloudSun, Github, Youtube, Facebook, MessageCircle, ShoppingBag, Store, Activity, Mail, MessageSquare, Battery, BatteryCharging, Radio, Wifi, PenTool, CloudRain, CloudLightning, Snowflake, GraduationCap, BookOpen } from 'lucide-react';
 import { useTodos } from '@/hooks/useTodos';
+import { DoodleBoard } from '@/components/widgets/DoodleBoard';
+import { motion } from 'framer-motion';
 
 export function StartPage({ setActiveSection }: { setActiveSection: (id: string) => void }) {
-    const [time, setTime] = useState(new Date());
+    const [time, setTime] = useState<Date | null>(null);
     const [weather, setWeather] = useState<{ temp: number, condition: string, city: string } | null>(null);
+    const [isDoodleOpen, setIsDoodleOpen] = useState(false);
+    const [placeholderIndex, setPlaceholderIndex] = useState(0);
+    const placeholders = [
+        "Search the web or enter a URL...",
+        "What's on your mind today, Bleu?",
+        "Find some inspiration...",
+        "Calculate '52 * 41'...",
+        "Start your focus session..."
+    ];
+
     const { todos, mounted } = useTodos();
 
     useEffect(() => {
+        setTime(new Date());
         const timer = setInterval(() => setTime(new Date()), 1000);
+
+        // Placeholder cycler
+        const placeholderTimer = setInterval(() => {
+            setPlaceholderIndex(prev => (prev + 1) % placeholders.length);
+        }, 3500);
 
         // Fetch real weather data on mount
         const fetchWeather = async () => {
@@ -40,7 +58,10 @@ export function StartPage({ setActiveSection }: { setActiveSection: (id: string)
         };
         fetchWeather();
 
-        return () => clearInterval(timer);
+        return () => {
+            clearInterval(timer);
+            clearInterval(placeholderTimer);
+        };
     }, []);
 
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
@@ -51,15 +72,41 @@ export function StartPage({ setActiveSection }: { setActiveSection: (id: string)
         }
     };
 
-    const formattedTime = time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+    const formattedTime = time ? time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }) : '--:--';
 
-    const hour = time.getHours();
+    const hour = time ? time.getHours() : 12;
     let greeting = 'GOOD EVENING';
     if (hour >= 5 && hour < 12) greeting = 'GOOD MORNING';
     else if (hour >= 12 && hour < 17) greeting = 'GOOD AFTERNOON';
 
+    const QUOTES = [
+        "Stay weird, stay alive.",
+        "Embrace the chaos.",
+        "Keep moving forward.",
+        "Make it happen, shock everyone.",
+        "Discipline equals freedom.",
+        "Stay hard."
+    ];
+    const dailyQuote = time ? QUOTES[time.getDate() % QUOTES.length] : QUOTES[0];
+
     // Ongoing tasks logic
-    const ongoingTasks = todos.filter(t => t.status === 'todo');
+    const ongoingTasks = todos.filter((t: any) => t.status === 'todo');
+    const doneTasks = todos.filter((t: any) => t.status === 'done');
+
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0 }
+    };
 
     return (
         <section className="min-h-[100dvh] w-full flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden bg-neo-bg z-0">
@@ -127,17 +174,18 @@ export function StartPage({ setActiveSection }: { setActiveSection: (id: string)
             <div className="w-full max-w-7xl flex flex-col items-center gap-10 xl:gap-14 relative z-10 -mt-2">
 
                 {/* Greeting Balloon Chat */}
-                <div className="relative mb-2 self-center animate-bounce duration-3000">
+                <motion.div variants={itemVariants} className="relative mb-2 self-center animate-bounce flex flex-col items-center" style={{ animationDuration: '3s' }}>
                     <div className="bg-neo-orange border-[3px] border-black px-6 py-2 rounded-2xl shadow-[4px_4px_0px_#111111] flex items-center gap-2">
                         <MessageSquare className="w-5 h-5 text-black" strokeWidth={2.5} />
                         <span className="font-bold text-black font-heading tracking-widest uppercase text-sm">{greeting}, BLEU!</span>
                     </div>
                     {/* Chat tail */}
                     <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-neo-orange border-b-[3px] border-r-[3px] border-black rotate-45" />
-                </div>
+                    <p className="mt-4 text-xs font-bold opacity-70 tracking-widest uppercase text-black">"{dailyQuote}"</p>
+                </motion.div>
 
                 {/* Search Bar - Center and Huge */}
-                <form onSubmit={handleSearch} className="w-full max-w-3xl relative group">
+                <motion.form variants={itemVariants} onSubmit={handleSearch} className="w-full max-w-3xl relative group">
                     <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
                         <svg className="h-7 w-7 opacity-80 group-focus-within:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -149,34 +197,40 @@ export function StartPage({ setActiveSection }: { setActiveSection: (id: string)
                     <input
                         type="search"
                         name="q"
-                        placeholder="Search web or type URL..."
+                        placeholder={placeholders[placeholderIndex]}
                         autoComplete="off"
                         autoFocus
-                        className="w-full pl-16 pr-8 py-5 text-2xl sm:text-3xl font-heading font-black bg-white border-4 md:border-[6px] border-black rounded-full shadow-[8px_8px_0px_#111111] focus:outline-none focus:translate-y-1 focus:translate-x-1 focus:shadow-[4px_4px_0px_#111111] transition-all placeholder:text-black/30 text-black"
+                        className="w-full pl-16 pr-8 py-5 text-xl sm:text-2xl md:text-3xl font-heading font-black bg-white border-4 md:border-[6px] border-black rounded-full shadow-[8px_8px_0px_#111111] focus:outline-none focus:translate-y-1 focus:translate-x-1 focus:shadow-[4px_4px_0px_#111111] transition-all placeholder:text-black/30 placeholder:transition-opacity text-black"
                     />
-                </form>
+                </motion.form>
 
                 {/* Main Dashboard Layout */}
-                <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                <motion.div variants={containerVariants} initial="hidden" animate="visible" className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
 
                     {/* Left Column: Primary Widgets */}
                     <div className="flex flex-col gap-6 md:col-span-1 lg:col-span-1">
                         {/* Time & Weather Row */}
-                        <div className="grid grid-cols-2 gap-5">
+                        <motion.div variants={itemVariants} className="grid grid-cols-2 gap-5">
                             {/* Time Widget */}
-                            <div className="bg-white border-[3px] border-black p-4 shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all cursor-default">
+                            <div className="bg-white border-[3px] border-black p-4 shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all cursor-default h-28 lg:h-32">
                                 <Clock className="w-6 h-6 mb-2 text-black" strokeWidth={2.5} />
                                 <h2 className="text-2xl font-black font-heading tracking-tighter text-black">{formattedTime}</h2>
                                 <p className="text-black/60 font-bold uppercase text-[9px] tracking-[0.2em] mt-1">Time</p>
                             </div>
 
                             {/* Weather Widget */}
-                            <div className="bg-neo-orange border-[3px] border-black p-4 shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all cursor-default text-black">
+                            <div className="bg-neo-orange border-[3px] border-black p-4 shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all cursor-default text-black group relative overflow-hidden h-28 lg:h-32">
                                 {weather ? (
                                     <>
-                                        {weather.condition === 'Clear' ? <Sun className="w-6 h-6 mb-2" strokeWidth={2.5} /> : <CloudSun className="w-6 h-6 mb-2" strokeWidth={2.5} />}
-                                        <h2 className="text-2xl font-black font-heading tracking-tighter">{weather.temp}°C</h2>
-                                        <p className="font-bold uppercase text-[10px] tracking-wider line-clamp-1">{weather.condition}</p>
+                                        {weather.condition === 'Clear' && <Sun className="w-8 h-8 mb-2 group-hover:scale-110 group-hover:rotate-45 transition-all text-black" strokeWidth={2.5} />}
+                                        {weather.condition === 'Cloudy' && <CloudSun className="w-8 h-8 mb-2 group-hover:scale-110 group-hover:-translate-y-1 transition-all text-black" strokeWidth={2.5} />}
+                                        {weather.condition === 'Rain' && <CloudRain className="w-8 h-8 mb-2 group-hover:scale-110 group-hover:translate-y-1 transition-all text-black animate-pulse" strokeWidth={2.5} />}
+                                        {weather.condition === 'Storm' && <CloudLightning className="w-8 h-8 mb-2 group-hover:scale-110 group-hover:translate-y-1 transition-all text-black animate-bounce" strokeWidth={2.5} />}
+                                        {weather.condition === 'Snow' && <Snowflake className="w-8 h-8 mb-2 group-hover:scale-110 group-hover:rotate-180 transition-all text-black" strokeWidth={2.5} />}
+
+                                        <h2 className="text-3xl mt-1 font-black font-heading tracking-tighter z-10">{weather.temp}°</h2>
+                                        <p className="font-bold uppercase text-[10px] tracking-widest mt-0.5 z-10">{weather.city}</p>
+                                        <p className="font-bold uppercase text-[8px] tracking-wider opacity-60 absolute bottom-2 group-hover:opacity-0 transition-opacity">{weather.condition}</p>
                                     </>
                                 ) : (
                                     <>
@@ -185,34 +239,49 @@ export function StartPage({ setActiveSection }: { setActiveSection: (id: string)
                                     </>
                                 )}
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Calendar Widget */}
-                        <div className="bg-neo-purple border-[3px] border-black p-5 shadow-[4px_4px_0px_#111111] rounded-2xl flex items-center justify-between hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all cursor-default text-black">
+                        <motion.div variants={itemVariants} className="flex-1 w-full bg-neo-purple border-[3px] border-black p-5 shadow-[4px_4px_0px_#111111] rounded-2xl flex items-center justify-between hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all cursor-default text-black">
                             <div className="flex flex-col">
-                                <h2 className="text-4xl font-black font-heading tracking-tighter leading-none mb-1">{time.getDate()}</h2>
-                                <h3 className="text-lg font-bold uppercase">{time.toLocaleDateString('en-US', { month: 'long' })}</h3>
-                                <p className="font-bold uppercase text-[10px] opacity-70 tracking-wider mix-blend-multiply">{time.toLocaleDateString('en-US', { weekday: 'long' })}</p>
+                                <h2 className="text-4xl font-black font-heading tracking-tighter leading-none mb-1">{time ? time.getDate() : '--'}</h2>
+                                <h3 className="text-lg font-bold uppercase">{time ? time.toLocaleDateString('en-US', { month: 'long' }) : '---'}</h3>
+                                <p className="font-bold uppercase text-[10px] opacity-70 tracking-wider mix-blend-multiply">{time ? time.toLocaleDateString('en-US', { weekday: 'long' }) : '---'}</p>
                             </div>
                             <Calendar className="w-10 h-10 opacity-50 mix-blend-multiply" strokeWidth={2} />
-                        </div>
+                        </motion.div>
                     </div>
 
                     {/* Center Column: Productivity / Tasks */}
-                    <div className="flex flex-col gap-6 md:col-span-1 lg:col-span-1">
-                        <button
+                    <div className="flex flex-col gap-6 md:col-span-1 lg:col-span-1 h-full">
+                        {/* Simple Stats */}
+                        <motion.div variants={itemVariants} className="grid grid-cols-2 gap-4">
+                            <div className="bg-neo-pink border-[3px] border-black p-4 rounded-2xl shadow-[4px_4px_0px_#111111] flex flex-col items-center justify-center text-black hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all cursor-default h-28 lg:h-32">
+                                <span className="text-3xl font-black font-heading">{mounted ? doneTasks.length : 0}</span>
+                                <span className="text-[9px] font-bold uppercase tracking-widest opacity-80 mt-1">Tasks Done</span>
+                            </div>
+                            <div className="bg-neo-blue border-[3px] border-black p-4 rounded-2xl shadow-[4px_4px_0px_#111111] flex flex-col items-center justify-center text-black hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all cursor-default h-28 lg:h-32">
+                                <span className="text-3xl font-black font-heading">
+                                    {mounted ? (typeof window !== 'undefined' ? (localStorage.getItem('focus-count') || '0') : '0') : '0'}
+                                </span>
+                                <span className="text-[9px] font-bold uppercase tracking-widest opacity-80 mt-1">Focus Sessions</span>
+                            </div>
+                        </motion.div>
+
+                        <motion.button
+                            variants={itemVariants}
                             onClick={() => setActiveSection('todo')}
-                            className="h-full w-full bg-neo-blue border-[3px] border-black p-5 shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-start items-start hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all text-left text-black"
+                            className="flex-1 w-full bg-white border-[3px] border-black p-5 shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-start items-start hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all text-left text-black group"
                         >
                             <div className="flex items-center gap-3 mb-3 w-full border-b-[3px] border-black/20 pb-3">
-                                <CheckSquare className="w-5 h-5" strokeWidth={2.5} />
+                                <CheckSquare className="w-5 h-5 group-hover:scale-110 transition-transform" strokeWidth={2.5} />
                                 <span className="font-bold uppercase tracking-[0.2em] text-xs opacity-80">Focus Tasks</span>
                                 <span className="ml-auto bg-black text-white text-[10px] font-bold px-2 py-1 rounded-md">{ongoingTasks.length} Pending</span>
                             </div>
                             {mounted && ongoingTasks.length > 0 ? (
-                                <div className="flex-1 flex flex-col gap-2 w-full w-full">
+                                <div className="flex-1 flex flex-col gap-2 w-full">
                                     {ongoingTasks.slice(0, 3).map((task, i) => (
-                                        <div key={task.id} className="flex gap-2 items-start p-2.5 bg-white/50 rounded-xl border-2 border-black/10">
+                                        <div key={task.id} className="flex gap-2 items-start p-2.5 bg-black/5 rounded-xl border-2 border-black/10">
                                             <div className="w-4 h-4 border-2 border-black rounded mt-0.5 bg-white flex-shrink-0" />
                                             <p className="font-bold text-sm line-clamp-2 leading-tight">{task.task}</p>
                                         </div>
@@ -227,57 +296,98 @@ export function StartPage({ setActiveSection }: { setActiveSection: (id: string)
                                     <p className="text-xs font-medium mt-1">Click to add new tasks</p>
                                 </div>
                             )}
-                        </button>
+                        </motion.button>
                     </div>
 
-                    {/* Right Column: Mini Apps / Links */}
-                    <div className="flex flex-col gap-6 md:col-span-2 lg:col-span-1">
-                        <div className="grid grid-cols-4 gap-4 h-full">
+                    {/* Right Column: Mini Apps / Links & Doodle */}
+                    <motion.div variants={itemVariants} className="flex flex-col gap-6 md:col-span-2 lg:col-span-1 h-full">
+                        <div className="grid grid-cols-5 gap-3 sm:gap-4">
                             {/* App Icon 1 */}
                             <a href="https://github.com" className="bg-white border-[3px] border-black aspect-square shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all group">
-                                <Github className="w-6 h-6 mb-1 text-black group-hover:scale-110 transition-transform" />
-                                <span className="font-bold text-[8px] uppercase tracking-wider text-black">GitHub</span>
+                                <Github className="w-5 h-5 mb-1 text-black group-hover:scale-110 transition-transform" />
+                                <span className="font-bold text-[7px] md:text-[8px] uppercase tracking-wider text-black">GitHub</span>
                             </a>
                             {/* App Icon 2 */}
                             <a href="https://youtube.com" className="bg-[#ff0000] border-[3px] border-black aspect-square shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all group">
-                                <Youtube className="w-6 h-6 mb-1 text-white group-hover:scale-110 transition-transform" />
-                                <span className="font-bold text-[8px] uppercase tracking-wider text-white">YouTube</span>
+                                <Youtube className="w-5 h-5 mb-1 text-white group-hover:scale-110 transition-transform" />
+                                <span className="font-bold text-[7px] md:text-[8px] uppercase tracking-wider text-white">YouTube</span>
                             </a>
                             {/* App Icon 3 */}
                             <a href="https://facebook.com" className="bg-[#1877F2] border-[3px] border-black aspect-square shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all group">
-                                <Facebook className="w-6 h-6 mb-1 text-white group-hover:scale-110 transition-transform" fill="currentColor" />
-                                <span className="font-bold text-[8px] uppercase tracking-wider text-white">Facebook</span>
+                                <Facebook className="w-5 h-5 mb-1 text-white group-hover:scale-110 transition-transform" fill="currentColor" />
+                                <span className="font-bold text-[7px] md:text-[8px] uppercase tracking-wider text-white">Facebook</span>
                             </a>
                             {/* App Icon 4 */}
                             <a href="https://web.whatsapp.com" className="bg-[#25D366] border-[3px] border-black aspect-square shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all group">
-                                <MessageCircle className="w-6 h-6 mb-1 text-black group-hover:scale-110 transition-transform" />
-                                <span className="font-bold text-[8px] uppercase tracking-wider text-black">WhatsApp</span>
+                                <MessageCircle className="w-5 h-5 mb-1 text-black group-hover:scale-110 transition-transform" />
+                                <span className="font-bold text-[7px] md:text-[8px] uppercase tracking-wider text-black">WhatsApp</span>
                             </a>
                             {/* App Icon 5 */}
                             <a href="https://shopee.com" className="bg-[#EE4D2D] border-[3px] border-black aspect-square shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all group">
-                                <ShoppingBag className="w-6 h-6 mb-1 text-white group-hover:scale-110 transition-transform" />
-                                <span className="font-bold text-[8px] uppercase tracking-wider text-white">Shopee</span>
+                                <ShoppingBag className="w-5 h-5 mb-1 text-white group-hover:scale-110 transition-transform" />
+                                <span className="font-bold text-[7px] md:text-[8px] uppercase tracking-wider text-white">Shopee</span>
                             </a>
                             {/* App Icon 6 */}
                             <a href="https://tokopedia.com" className="bg-[#42B549] border-[3px] border-black aspect-square shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all group">
-                                <Store className="w-6 h-6 mb-1 text-white group-hover:scale-110 transition-transform" />
-                                <span className="font-bold text-[8px] uppercase tracking-wider text-white">Tokopedia</span>
+                                <Store className="w-5 h-5 mb-1 text-white group-hover:scale-110 transition-transform" />
+                                <span className="font-bold text-[7px] md:text-[8px] uppercase tracking-wider text-white">Tokopedia</span>
                             </a>
                             {/* App Icon 7 - Timer feature link */}
                             <button onClick={() => setActiveSection('pomodoro')} className="bg-neo-pink border-[3px] border-black aspect-square shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all group">
-                                <Activity className="w-6 h-6 mb-1 text-black group-hover:scale-110 transition-transform" />
-                                <span className="font-bold text-[8px] uppercase tracking-wider text-black">Timer</span>
+                                <Activity className="w-5 h-5 mb-1 text-black group-hover:scale-110 transition-transform" />
+                                <span className="font-bold text-[7px] md:text-[8px] uppercase tracking-wider text-black">Timer</span>
                             </button>
                             {/* App Icon 8 - Mail */}
                             <a href="https://mail.google.com" className="bg-white border-[3px] border-black aspect-square shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all group">
-                                <Mail className="w-6 h-6 mb-1 text-black group-hover:scale-110 transition-transform" />
-                                <span className="font-bold text-[8px] uppercase tracking-wider text-black">Mail</span>
+                                <Mail className="w-5 h-5 mb-1 text-black group-hover:scale-110 transition-transform" />
+                                <span className="font-bold text-[7px] md:text-[8px] uppercase tracking-wider text-black">Mail</span>
+                            </a>
+                            {/* App Icon 9 - Siska */}
+                            <a href="https://siska.undira.ac.id/" className="bg-[#FFB800] border-[3px] border-black aspect-square shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all group">
+                                <GraduationCap className="w-5 h-5 mb-1 text-black group-hover:scale-110 transition-transform" />
+                                <span className="font-bold text-[7px] md:text-[8px] uppercase tracking-wider text-black">Siska</span>
+                            </a>
+                            {/* App Icon 10 - Kuliah Online */}
+                            <a href="https://kuliahonline.undira.ac.id/my/" className="bg-neo-blue border-[3px] border-black aspect-square shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all group">
+                                <BookOpen className="w-5 h-5 mb-1 text-black group-hover:scale-110 transition-transform" />
+                                <span className="font-bold text-[7px] md:text-[8px] uppercase tracking-wider text-black">Kuliah</span>
                             </a>
                         </div>
-                    </div>
+                        {/* Doodle Button */}
+                        <button
+                            onClick={() => setIsDoodleOpen(true)}
+                            className="flex-1 w-full min-h-[120px] bg-[#FAF9F6] border-[3px] border-black p-5 shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col items-center justify-center gap-2 hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all group"
+                        >
+                            <PenTool className="w-7 h-7 text-black group-hover:rotate-12 transition-transform" strokeWidth={2.5} />
+                            <span className="font-bold text-black font-heading tracking-widest uppercase md:text-sm lg:text-base">DOODLE BOARD</span>
+                        </button>
+                    </motion.div>
 
-                </div>
+                </motion.div>
+
+
             </div>
+
+            {/* Doodle Modal Overlay */}
+            {isDoodleOpen && (
+                <div
+                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8 bg-black/60 backdrop-blur-sm"
+                    onClick={() => setIsDoodleOpen(false)}
+                >
+                    <div
+                        className="w-full max-w-5xl h-[70vh] relative animate-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            onClick={() => setIsDoodleOpen(false)}
+                            className="absolute -top-4 -right-4 z-10 w-10 h-10 bg-neo-pink border-[3px] border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_#111111] hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all text-black font-black"
+                        >
+                            ✕
+                        </button>
+                        <DoodleBoard />
+                    </div>
+                </div>
+            )}
         </section>
     );
 }

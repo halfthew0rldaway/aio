@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Search, Clock, Calendar, CheckSquare, Sun, CloudSun, Github, Youtube, Facebook, MessageCircle, ShoppingBag, Store, Activity, Mail, MessageSquare, Battery, BatteryCharging, Radio, Wifi, PenTool, CloudRain, CloudLightning, Snowflake, GraduationCap, BookOpen } from 'lucide-react';
+import { Search, Clock, Calendar, CheckSquare, Sun, CloudSun, Github, Youtube, Facebook, MessageCircle, ShoppingBag, Store, Activity, Mail, MessageSquare, Battery, BatteryCharging, Radio, Wifi, PenTool, CloudRain, CloudLightning, Snowflake, GraduationCap, BookOpen, Settings, X } from 'lucide-react';
 import { useTodos } from '@/hooks/useTodos';
 import { DoodleBoard } from '@/components/widgets/DoodleBoard';
 import { motion } from 'framer-motion';
@@ -10,10 +10,18 @@ export function StartPage({ setActiveSection }: { setActiveSection: (id: string)
     const [time, setTime] = useState<Date | null>(null);
     const [weather, setWeather] = useState<{ temp: number, condition: string, city: string } | null>(null);
     const [isDoodleOpen, setIsDoodleOpen] = useState(false);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [settings, setSettings] = useState({
+        name: 'Bleu',
+        link1Name: 'Siska',
+        link1Url: 'https://siska.undira.ac.id/',
+        link2Name: 'Kuliah',
+        link2Url: 'https://kuliahonline.undira.ac.id/my/'
+    });
     const [placeholderIndex, setPlaceholderIndex] = useState(0);
     const placeholders = [
         "Search the web or enter a URL...",
-        "What's on your mind today, Bleu?",
+        `What's on your mind today, ${settings.name}?`,
         "Find some inspiration...",
         "Calculate '52 * 41'...",
         "Start your focus session..."
@@ -29,6 +37,15 @@ export function StartPage({ setActiveSection }: { setActiveSection: (id: string)
         const placeholderTimer = setInterval(() => {
             setPlaceholderIndex(prev => (prev + 1) % placeholders.length);
         }, 3500);
+
+        const savedSettings = localStorage.getItem('startpage-settings');
+        if (savedSettings) {
+            try {
+                setSettings(JSON.parse(savedSettings));
+            } catch (e) {
+                console.error('Failed to parse settings', e);
+            }
+        }
 
         // Fetch real weather data on mount
         const fetchWeather = async () => {
@@ -127,6 +144,14 @@ export function StartPage({ setActiveSection }: { setActiveSection: (id: string)
             {/* Overlay texture for paper roughness (using a CSS noise trick or just a subtle transparent overlay) */}
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply z-0" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} />
 
+            {/* Settings Button */}
+            <button
+                onClick={() => setIsSettingsOpen(true)}
+                className="absolute top-4 right-4 z-50 w-12 h-12 bg-white border-[3px] border-black rounded-full shadow-[4px_4px_0px_#111111] flex items-center justify-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all group"
+            >
+                <Settings className="w-6 h-6 text-black group-hover:rotate-90 transition-transform duration-300" strokeWidth={2.5} />
+            </button>
+
             {/* Floating Background Blooms */}
             <div className="absolute top-1/4 -left-32 w-96 h-96 bg-neo-pink rounded-full blur-3xl opacity-30 -z-10 animate-drift" />
             <div className="absolute top-3/4 left-1/4 w-[500px] h-[500px] bg-neo-purple rounded-full blur-3xl opacity-20 -z-10 animate-drift" style={{ animationDelay: '2s' }} />
@@ -177,7 +202,7 @@ export function StartPage({ setActiveSection }: { setActiveSection: (id: string)
                 <motion.div variants={itemVariants} className="relative mb-2 self-center animate-bounce flex flex-col items-center" style={{ animationDuration: '3s' }}>
                     <div className="bg-neo-orange border-[3px] border-black px-6 py-2 rounded-2xl shadow-[4px_4px_0px_#111111] flex items-center gap-2">
                         <MessageSquare className="w-5 h-5 text-black" strokeWidth={2.5} />
-                        <span className="font-bold text-black font-heading tracking-widest uppercase text-sm">{greeting}, BLEU!</span>
+                        <span className="font-bold text-black font-heading tracking-widest uppercase text-sm">{greeting}, {settings.name.toUpperCase()}!</span>
                     </div>
                     {/* Chat tail */}
                     <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-neo-orange border-b-[3px] border-r-[3px] border-black rotate-45" />
@@ -342,15 +367,15 @@ export function StartPage({ setActiveSection }: { setActiveSection: (id: string)
                                 <Mail className="w-5 h-5 mb-1 text-black group-hover:scale-110 transition-transform" />
                                 <span className="font-bold text-[7px] md:text-[8px] uppercase tracking-wider text-black">Mail</span>
                             </a>
-                            {/* App Icon 9 - Siska */}
-                            <a href="https://siska.undira.ac.id/" className="bg-[#FFB800] border-[3px] border-black aspect-square shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all group">
+                            {/* Custom Link 1 */}
+                            <a href={settings.link1Url} className="bg-[#FFB800] border-[3px] border-black aspect-square shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all group overflow-hidden">
                                 <GraduationCap className="w-5 h-5 mb-1 text-black group-hover:scale-110 transition-transform" />
-                                <span className="font-bold text-[7px] md:text-[8px] uppercase tracking-wider text-black">Siska</span>
+                                <span className="font-bold text-[7px] md:text-[8px] uppercase tracking-wider text-black w-full text-center truncate px-1">{settings.link1Name}</span>
                             </a>
-                            {/* App Icon 10 - Kuliah Online */}
-                            <a href="https://kuliahonline.undira.ac.id/my/" className="bg-neo-blue border-[3px] border-black aspect-square shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all group">
+                            {/* Custom Link 2 */}
+                            <a href={settings.link2Url} className="bg-neo-blue border-[3px] border-black aspect-square shadow-[4px_4px_0px_#111111] rounded-2xl flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all group overflow-hidden">
                                 <BookOpen className="w-5 h-5 mb-1 text-black group-hover:scale-110 transition-transform" />
-                                <span className="font-bold text-[7px] md:text-[8px] uppercase tracking-wider text-black">Kuliah</span>
+                                <span className="font-bold text-[7px] md:text-[8px] uppercase tracking-wider text-black w-full text-center truncate px-1">{settings.link2Name}</span>
                             </a>
                         </div>
                         {/* Doodle Button */}
@@ -367,6 +392,85 @@ export function StartPage({ setActiveSection }: { setActiveSection: (id: string)
 
 
             </div>
+
+            {/* Settings Modal Overlay */}
+            {isSettingsOpen && (
+                <div
+                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8 bg-black/60 backdrop-blur-sm"
+                    onClick={() => setIsSettingsOpen(false)}
+                >
+                    <div
+                        className="w-full max-w-md bg-white border-[3px] border-black p-6 rounded-2xl shadow-[8px_8px_0px_#111111] animate-in zoom-in-95 duration-200 flex flex-col gap-4 relative"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            onClick={() => setIsSettingsOpen(false)}
+                            className="absolute -top-4 -right-4 z-10 w-10 h-10 bg-neo-pink border-[3px] border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_#111111] hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all text-black font-black"
+                        >
+                            <X className="w-5 h-5 text-black" strokeWidth={3} />
+                        </button>
+                        <h2 className="text-2xl font-black font-heading tracking-widest uppercase border-b-4 border-black pb-2 mb-2">Settings</h2>
+                        
+                        <div className="flex flex-col gap-2">
+                            <label className="font-bold text-sm uppercase tracking-wider">Your Name</label>
+                            <input 
+                                type="text" 
+                                value={settings.name}
+                                onChange={(e) => setSettings({...settings, name: e.target.value})}
+                                className="w-full p-3 border-[3px] border-black rounded-xl font-bold focus:outline-none focus:shadow-[4px_4px_0px_#111111] transition-all text-black bg-white"
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                            <label className="font-bold text-sm uppercase tracking-wider">Custom Link 1 Name</label>
+                            <input 
+                                type="text" 
+                                value={settings.link1Name}
+                                onChange={(e) => setSettings({...settings, link1Name: e.target.value})}
+                                className="w-full p-3 border-[3px] border-black rounded-xl font-bold focus:outline-none focus:shadow-[4px_4px_0px_#111111] transition-all text-black bg-white"
+                            />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <label className="font-bold text-sm uppercase tracking-wider">Custom Link 1 URL</label>
+                            <input 
+                                type="url" 
+                                value={settings.link1Url}
+                                onChange={(e) => setSettings({...settings, link1Url: e.target.value})}
+                                className="w-full p-3 border-[3px] border-black rounded-xl font-bold focus:outline-none focus:shadow-[4px_4px_0px_#111111] transition-all text-black bg-white"
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                            <label className="font-bold text-sm uppercase tracking-wider">Custom Link 2 Name</label>
+                            <input 
+                                type="text" 
+                                value={settings.link2Name}
+                                onChange={(e) => setSettings({...settings, link2Name: e.target.value})}
+                                className="w-full p-3 border-[3px] border-black rounded-xl font-bold focus:outline-none focus:shadow-[4px_4px_0px_#111111] transition-all text-black bg-white"
+                            />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <label className="font-bold text-sm uppercase tracking-wider">Custom Link 2 URL</label>
+                            <input 
+                                type="url" 
+                                value={settings.link2Url}
+                                onChange={(e) => setSettings({...settings, link2Url: e.target.value})}
+                                className="w-full p-3 border-[3px] border-black rounded-xl font-bold focus:outline-none focus:shadow-[4px_4px_0px_#111111] transition-all text-black bg-white"
+                            />
+                        </div>
+
+                        <button 
+                            onClick={() => {
+                                localStorage.setItem('startpage-settings', JSON.stringify(settings));
+                                setIsSettingsOpen(false);
+                            }}
+                            className="mt-4 w-full bg-neo-blue text-black font-black uppercase tracking-widest p-4 border-[3px] border-black rounded-xl shadow-[4px_4px_0px_#111111] hover:-translate-y-1 hover:shadow-[6px_6px_0px_#111111] transition-all"
+                        >
+                            Save Settings
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Doodle Modal Overlay */}
             {isDoodleOpen && (
